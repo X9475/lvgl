@@ -82,28 +82,28 @@ void lv_robot_main()
  **********************/
 static void lv_robot_page_register()
 {
-    //菜单页面加入链表
-    lv_robot_menu_ui_register();
-    //桌面页面加入链表
-    lv_robot_desktop_ui_register();
     //设置页面加入链表
     lv_robot_setting_ui_register();
     //好运日签加入链表
     lv_robot_luckcard_ui_register();
     //解惑魔盒加入链表
     lv_robot_mystery_ui_register();
-    //天气加入链表
-    lv_robot_weather_ui_register();
     //相机加入链表
     lv_robot_camera_ui_register();
     //录像加入链表
     lv_robot_record_ui_register();
-    //叮咚策略器加入链表
-    lv_robot_strategy_ui_register();
+    //天气加入链表
+    lv_robot_weather_ui_register();
     //待机样式加入链表
     lv_robot_standstyle_ui_register();
+    //叮咚策略器加入链表
+    lv_robot_strategy_ui_register();
     //解压加入链表
     lv_robot_relax_ui_register();
+    //菜单页面加入链表
+    lv_robot_menu_ui_register();
+    //桌面页面加入链表
+    lv_robot_desktop_ui_register();
 
     return;
 }

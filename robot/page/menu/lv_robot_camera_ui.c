@@ -100,7 +100,7 @@ static void robot_show_camera_page(void)
     lv_obj_t *label = lv_label_create(tips_cont);
     lv_label_set_text(label, "拍3下我的脑袋就可以拍照了~");
     lv_obj_set_style_text_opa(label, LV_OPA_80, LV_PART_MAIN);
-    lv_obj_set_style_text_font(label, fzlth_font_30, LV_PART_MAIN);
+    lv_obj_set_style_text_font(label, fzlth_font_30B, LV_PART_MAIN);
     lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
     lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
     lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
@@ -171,7 +171,7 @@ static void timer_callback(lv_timer_t *timer)
 
     lv_obj_t *label = lv_timer_get_user_data(timer);
     lv_label_set_text_fmt(label, "%d", tick_sec);
-    lv_obj_set_style_text_font(label, fzlth_font_100, LV_PART_MAIN);
+    lv_obj_set_style_text_font(label, fzlth_font_100B, LV_PART_MAIN);
     lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
     lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
     lv_obj_set_style_text_opa(label, LV_OPA_COVER, LV_PART_MAIN);
@@ -181,9 +181,8 @@ static void timer_callback(lv_timer_t *timer)
     {
         tick_sec = 3;
         lv_obj_clean(camera_page);
-        //TODO: 通知进行抓拍
+        //TODO: 通知发送相机抓拍事件
 
-        LV_LOG_USER("拍照结束！！！");
     }
     tick_sec--;
 

@@ -44,6 +44,8 @@ void lv_manager_init()
     fzlth_font_30 = create_freetype_font(30, LV_FREETYPE_FONT_STYLE_NORMAL);
     fzlth_font_40 = create_freetype_font(40, LV_FREETYPE_FONT_STYLE_NORMAL);
     fzlth_font_100 = create_freetype_font(100, LV_FREETYPE_FONT_STYLE_NORMAL);
+    fzlth_font_30B = create_freetype_font(30, LV_FREETYPE_FONT_STYLE_BOLD);
+    fzlth_font_100B = create_freetype_font(100, LV_FREETYPE_FONT_STYLE_BOLD);
 
     return;
 }
@@ -57,6 +59,8 @@ void lv_manager_deinit()
     delete_freetype_font(fzlth_font_30);
     delete_freetype_font(fzlth_font_40);
     delete_freetype_font(fzlth_font_100);
+    delete_freetype_font(fzlth_font_30B);
+    delete_freetype_font(fzlth_font_100B);
 
     return;
 }

@@ -29,9 +29,11 @@ static void robot_style_init();
 static void robot_show_record_page(void);
 static void robot_exit_record_page(void);
 static void robot_record_page_create(void);
+static void record_event_hander(lv_event_t *);
 static void consecutive_click_event_hander(lv_event_t *);
 static void record_btn_event_handler(lv_event_t *);
-static void timer_callback(lv_timer_t *);
+static void timer_callback_1(lv_timer_t *);
+static void timer_callback_2(lv_timer_t *);
 
 /**********************
  * GLOBAL PROTOTYPES
@@ -51,14 +53,16 @@ static lv_style_t btn_style;
 static lv_obj_t *bg_image;
 static lv_obj_t *tips_cont;
 static lv_obj_t *indicator;
-static lv_obj_t *indicator_area;
 static lv_obj_t *record_page;
 static lv_obj_t *time_area;
-static lv_timer_t *timer_arc;//录像的秒数
+static lv_timer_t *timer_1;
+static lv_timer_t *timer_2;//录像的秒数
 
+static uint32_t tick_sec = 3;
 static uint32_t record_sec = 0;
 static bool btn_control_flag = false;
 static bool click_invalid = false;
+static uint32_t EV_RECORD_START;//自定义事件
 
 static lv_widget_t lv_page_record = {
     .page = NULL,
@@ -155,12 +159,12 @@ static void robot_show_record_page(void)
     lv_obj_t *label = lv_label_create(tips_cont);
     lv_label_set_text(label, "拍3下我的脑袋就可以录像了~");
     lv_obj_set_style_text_opa(label, LV_OPA_80, LV_PART_MAIN);
-    lv_obj_set_style_text_font(label, fzlth_font_30, LV_PART_MAIN);
+    lv_obj_set_style_text_font(label, fzlth_font_30B, LV_PART_MAIN);
     lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
     lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
     lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
 
-    //触碰屏幕三下模拟拍打
+    lv_obj_add_event_cb(record_page, record_event_hander, EV_RECORD_START, NULL);
     lv_obj_add_event_cb(record_page, consecutive_click_event_hander, LV_EVENT_ALL, NULL);
 
     return;
@@ -168,15 +172,22 @@ static void robot_show_record_page(void)
 
 static void robot_exit_record_page(void)
 {
+    tick_sec = 3;
     record_sec = 0;
     btn_control_flag = false;
     click_invalid = false;
 
     //1.销毁或者暂停定时器
-    if (NULL != timer_arc)
+    if (NULL != timer_2)
     {
-        lv_timer_del(timer_arc);
-        timer_arc = NULL;
+        lv_timer_del(timer_2);
+        timer_2 = NULL;
+    }
+
+    if (NULL != timer_1)
+    {
+        lv_timer_del(timer_1);
+        timer_1 = NULL;
     }
 }
 
@@ -190,6 +201,9 @@ static void robot_record_page_create(void)
 
     lv_page_record.page = record_page;
     lv_page_manager_add(&lv_page_record);
+
+    //注册自定义事件
+    EV_RECORD_START = lv_event_register_id();
 
     return;
 }
@@ -207,8 +221,58 @@ static void consecutive_click_event_hander(lv_event_t *e)
         //删除小贴士
         lv_obj_del(tips_cont);
 
+        lv_obj_t *label_num = lv_obj_create(record_page);
+        lv_obj_remove_style_all(label_num);
+        lv_obj_set_size(label_num, 60, 140);
+        lv_obj_set_style_bg_opa(label_num, LV_OPA_TRANSP, LV_PART_MAIN);
+        lv_obj_align(label_num, LV_ALIGN_CENTER, 0, 0);
+
+        lv_obj_t *label1 = lv_label_create(label_num);
+        lv_obj_set_style_text_opa(label1, LV_OPA_TRANSP, LV_PART_MAIN);
+
+        // 创建定时器，执行3次后自动删除
+        timer_1 = lv_timer_create(timer_callback_1, 1000, label1);
+        lv_timer_set_repeat_count(timer_1, 4);
+        lv_timer_set_auto_delete(timer_1, false);//退出时手动删除定时器        
+    }
+
+    return;
+}
+
+static void timer_callback_1(lv_timer_t *timer)
+{
+    LV_LOG_USER("录像倒计时: %ds", tick_sec);
+
+    lv_obj_t *label = lv_timer_get_user_data(timer);
+    lv_label_set_text_fmt(label, "%d", tick_sec);
+    lv_obj_set_style_text_font(label, fzlth_font_100B, LV_PART_MAIN);
+    lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+    lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+    lv_obj_set_style_text_opa(label, LV_OPA_COVER, LV_PART_MAIN);
+    lv_obj_center(label);
+
+    if (tick_sec == 0)
+    {
+        tick_sec = 3;
+        lv_obj_clean(record_page);
+        lv_obj_send_event(record_page, EV_RECORD_START, NULL);
+        //TODO: 通知开始录像
+
+    }
+    tick_sec--;
+
+    return;
+}
+
+static void record_event_hander(lv_event_t *e)
+{
+    lv_obj_t *obj = lv_event_get_target(e);
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (EV_RECORD_START == code)
+    {
         //顶部渐变区域
-        indicator_area = lv_obj_create(record_page);
+        lv_obj_t *indicator_area = lv_obj_create(record_page);
         lv_obj_set_size(indicator_area, 502, 75);
         lv_obj_align(indicator_area, LV_ALIGN_TOP_MID, 0, 0);
         lv_obj_add_style(indicator_area, &area_style, 0);
@@ -223,7 +287,7 @@ static void consecutive_click_event_hander(lv_event_t *e)
 
         time_area = lv_obj_create(indicator_area);
         lv_obj_remove_style_all(time_area);
-        lv_obj_set_size(time_area, 75, 56);
+        lv_obj_set_size(time_area, 85, 56);//原75->85，字体不同
         lv_obj_set_style_bg_opa(time_area, LV_OPA_TRANSP, LV_PART_MAIN);
         lv_obj_align(time_area, LV_ALIGN_TOP_LEFT, 226, 10);
 
@@ -247,9 +311,7 @@ static void consecutive_click_event_hander(lv_event_t *e)
         lv_obj_add_style(arc, &main_style, LV_PART_MAIN);
         lv_obj_set_style_bg_opa(arc, LV_OPA_TRANSP, 0);
         lv_obj_align(arc, LV_ALIGN_BOTTOM_MID, 0, -20);
-        //加入定时器
-        timer_arc = lv_timer_create(timer_callback, 1000, arc);
-        lv_timer_pause(timer_arc);
+        timer_2 = lv_timer_create(timer_callback_2, 1000, arc);
 
         lv_obj_t *btn = lv_btn_create(record_page);
         lv_obj_set_style_shadow_width(btn, 0, LV_PART_MAIN);
@@ -259,9 +321,11 @@ static void consecutive_click_event_hander(lv_event_t *e)
         lv_obj_align(btn, LV_ALIGN_BOTTOM_MID, 0, -58);
         lv_obj_add_event_cb(btn, record_btn_event_handler, LV_EVENT_CLICKED, NULL);
     }
+
+    return;
 }
 
-static void timer_callback(lv_timer_t *timer)
+static void timer_callback_2(lv_timer_t *timer)
 {
     record_sec = record_sec++ >= 3600? 0 : record_sec;//60min
     lv_obj_t *label = lv_obj_get_child(time_area, 0);
@@ -282,15 +346,20 @@ static void record_btn_event_handler(lv_event_t *e)
         btn_control_flag = !btn_control_flag;
         if (true == btn_control_flag)
         {
+            //暂停定时器计时
+            lv_timer_pause(timer_2);
+            //TODO: 通知停止录像
+
+        }
+        if (false == btn_control_flag)
+        {
             //恢复定时器计时
-            lv_timer_resume(timer_arc);
+            lv_timer_resume(timer_2);
             record_sec = 0;
+            //TODO: 通知重新录像
+
         }
     }
 
-    if (false == btn_control_flag)
-    {
-        //暂停定时器
-        lv_timer_pause(timer_arc);
-    }
+    return;
 }

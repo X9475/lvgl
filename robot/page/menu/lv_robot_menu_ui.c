@@ -41,6 +41,8 @@ static void robot_menu_item_event_handler(lv_event_t *);
 static lv_style_t style;
 static lv_obj_t *menu_page;
 
+static uint16_t index = 0;
+
 static lv_widget_t lv_page_menu = {
     .page = NULL,
     .name = "菜单",
@@ -117,10 +119,8 @@ static void robot_show_menu_page(void)
     }
 
     //记忆上次从菜单进入的页面位置
-    lv_obj_t *cur_screen = lv_scr_act();
-    lv_widget_t *widget = lv_find_widget_from_page(cur_screen);
-    int32_t index = widget->type > LV_PAGE_RELAX ? 0 : widget->type;
-    lv_obj_scroll_to_view(lv_obj_get_child(cont, index), LV_ANIM_OFF);
+    // index = index > (LV_PAGE_RELAX / 2) ? (index - 1) : index;
+    // lv_obj_scroll_to_view(lv_obj_get_child(cont, index), LV_ANIM_OFF);
 
     return;
 }
@@ -157,13 +157,10 @@ static void robot_menu_item_event_handler(lv_event_t *e)
     {
         //目标页面跳转，页面入栈
         lv_widget_t *cur_screen = lv_page_manager_change(data->type);
-        //页面回收前的操作
-        if (NULL != cur_screen->exit_func)
-        {
-            cur_screen->exit_func();
-        }
+
         //清除页面内容
         lv_obj_clean(lv_page_menu.page);
+
         //激活屏幕
         lv_scr_load_anim(cur_screen->page, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, false);
     }

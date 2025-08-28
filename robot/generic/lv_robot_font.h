@@ -35,6 +35,8 @@ extern "C" {
 extern lv_font_t *fzlth_font_30;
 extern lv_font_t *fzlth_font_40;
 extern lv_font_t *fzlth_font_100;
+extern lv_font_t *fzlth_font_30B;
+extern lv_font_t *fzlth_font_100B;
 
 /**********************
  * GLOBAL FUNCTIONS
