@@ -17,6 +17,7 @@
 /*********************
  *      DEFINES
  *********************/
+#define RECORD_TIME 300 //5min
 
 /**********************
  *      TYPEDEFS
@@ -302,7 +303,7 @@ static void record_event_hander(lv_event_t *e)
         //底部圆弧区域
         lv_obj_t *arc = lv_arc_create(record_page);
         lv_obj_set_size(arc, 110, 110);
-        lv_arc_set_range(arc, 0, 3600);
+        lv_arc_set_range(arc, 0, RECORD_TIME);
         lv_arc_set_rotation(arc, 270);
         lv_arc_set_bg_angles(arc, 0, 360);
         lv_obj_remove_style(arc, NULL, LV_PART_KNOB);
@@ -327,12 +328,13 @@ static void record_event_hander(lv_event_t *e)
 
 static void timer_callback_2(lv_timer_t *timer)
 {
-    record_sec = record_sec++ >= 3600? 0 : record_sec;//60min
     lv_obj_t *label = lv_obj_get_child(time_area, 0);
     lv_obj_t *arc = (lv_obj_t *)lv_timer_get_user_data(timer);
 
     lv_label_set_text_fmt(label, "%02d:%02d", record_sec / 60, record_sec % 60);
     lv_arc_set_value(arc, record_sec);
+
+    record_sec = record_sec++ >= RECORD_TIME? 0 : record_sec;
 }
 
 static void record_btn_event_handler(lv_event_t *e)
