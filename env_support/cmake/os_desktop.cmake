@@ -29,7 +29,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 ### INFO: When LV_BUILD_SET_CONFIG_OPTS is enabled - these options are set automatically
 ### based on lv_conf.h or Kconfig
-
+option(CONFIG_LV_BUILD_ROBOT "Build robot" ON)
 option(CONFIG_LV_BUILD_DEMOS "Build demos" ON)
 option(CONFIG_LV_BUILD_EXAMPLES "Build examples" ON)
 option(CONFIG_LV_USE_THORVG_INTERNAL "Use the internal version of ThorVG" ON)
@@ -60,6 +60,7 @@ get_directory_property(HAS_PARENT_SCOPE PARENT_DIRECTORY)
 # Set sources used for LVGL components
 file(GLOB_RECURSE SOURCES ${LVGL_ROOT_DIR}/src/*.c
                           ${LVGL_ROOT_DIR}/src/*.S)
+file(GLOB_RECURSE ROBOT_SOURCES ${LVGL_ROOT_DIR}/robot/*.c)
 file(GLOB_RECURSE EXAMPLE_SOURCES ${LVGL_ROOT_DIR}/examples/*.c)
 file(GLOB_RECURSE DEMO_SOURCES ${LVGL_ROOT_DIR}/demos/*.c)
 file(GLOB_RECURSE THORVG_SOURCES ${LVGL_ROOT_DIR}/src/libs/thorvg/*.cpp
@@ -275,6 +276,28 @@ if(CONFIG_LV_BUILD_DEMOS)
 
 endif()
 
+# Build LVGL robot library
+if(CONFIG_LV_BUILD_ROBOT)
+
+    message(STATUS "Enabling the building of robot")
+
+    add_library(lvgl_robot ${ROBOT_SOURCES})
+    add_library(lvgl::robot ALIAS lvgl_robot)
+    target_include_directories(lvgl_robot SYSTEM PUBLIC ${LVGL_ROOT_DIR}/robot)
+    set_target_properties(lvgl_robot PROPERTIES COMPILE_DEFINITIONS "${COMP_DEF}")
+
+    # This tells cmake to link lvgl with lvgl_robot
+    # PUBLIC allows code linking with LVGL to also use the library
+    # The linker will resolve all dependencies when dynamic linking 
+    target_link_libraries(lvgl PUBLIC lvgl_robot)
+
+    # During static linking, we need to create a cyclic dependency as the robot also needs lvgl
+    if (NOT BUILD_SHARED_LIBS)
+        target_link_libraries(lvgl_robot PRIVATE lvgl)
+    endif()
+
+endif()
+
 ############################## INSTALLATION ######################################
 
 # Library and headers can be installed to system using make install
@@ -418,6 +441,32 @@ if(CONFIG_LV_BUILD_EXAMPLES)
 
     install(
         TARGETS lvgl_examples
+        ARCHIVE DESTINATION "${LIB_INSTALL_DIR}"
+        LIBRARY DESTINATION "${LIB_INSTALL_DIR}"
+        RUNTIME DESTINATION "${RUNTIME_INSTALL_DIR}"
+        PUBLIC_HEADER DESTINATION "${INC_INSTALL_DIR}")
+
+endif()
+
+if(CONFIG_LV_BUILD_ROBOT)
+
+    install(
+        DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/robot"
+        DESTINATION "${INC_INSTALL_DIR}"
+        FILES_MATCHING
+        PATTERN "*.h")
+
+    set_target_properties(
+        lvgl_robot
+        PROPERTIES OUTPUT_NAME lvgl_robot
+        VERSION ${LVGL_VERSION}
+        SOVERSION ${LVGL_SOVERSION}
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib"
+        PUBLIC_HEADER "${LVGL_PUBLIC_HEADERS}")
+
+    install(
+        TARGETS lvgl_robot
         ARCHIVE DESTINATION "${LIB_INSTALL_DIR}"
         LIBRARY DESTINATION "${LIB_INSTALL_DIR}"
         RUNTIME DESTINATION "${RUNTIME_INSTALL_DIR}"
