@@ -17,7 +17,7 @@
 /*********************
  *      DEFINES
  *********************/
-#define RECORD_TIME 300 //5min
+#define RECORD_TIME 600 //10min
 
 /**********************
  *      TYPEDEFS
@@ -30,11 +30,14 @@ static void robot_style_init();
 static void robot_show_record_page(void);
 static void robot_exit_record_page(void);
 static void robot_record_page_create(void);
+static void click_event_hander(lv_event_t *);
 static void record_event_hander(lv_event_t *);
+static void exhausted_event_hander(lv_event_t *);
 static void consecutive_click_event_hander(lv_event_t *);
 static void record_btn_event_handler(lv_event_t *);
 static void timer_callback_1(lv_timer_t *);
 static void timer_callback_2(lv_timer_t *);
+static void anim_alpha_exec(lv_obj_t *, int32_t);
 
 /**********************
  * GLOBAL PROTOTYPES
@@ -61,7 +64,9 @@ static uint32_t tick_sec = 3;
 static uint32_t record_sec = 0;
 static bool btn_control_flag = false;
 static bool click_invalid = false;
-static uint32_t EV_RECORD_START;//自定义事件
+//自定义事件
+static uint32_t EV_RECORD_START;
+static uint32_t EV_RECORD_EXHAUSTED;
 
 static lv_widget_t lv_page_record = {
     .page = NULL,
@@ -164,6 +169,7 @@ static void robot_show_record_page(void)
     lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
 
     lv_obj_add_event_cb(record_page, record_event_hander, EV_RECORD_START, NULL);
+    lv_obj_add_event_cb(record_page, exhausted_event_hander, EV_RECORD_EXHAUSTED, NULL);
     lv_obj_add_event_cb(record_page, consecutive_click_event_hander, LV_EVENT_ALL, NULL);
 
     return;
@@ -203,6 +209,7 @@ static void robot_record_page_create(void)
 
     //注册自定义事件
     EV_RECORD_START = lv_event_register_id();
+    EV_RECORD_EXHAUSTED = lv_event_register_id();
 
     return;
 }
@@ -332,7 +339,62 @@ static void timer_callback_2(lv_timer_t *timer)
     lv_label_set_text_fmt(label, "%02d:%02d", record_sec / 60, record_sec % 60);
     lv_arc_set_value(arc, record_sec);
 
+    if (record_sec == RECORD_TIME)
+    {
+        lv_obj_send_event(record_page, EV_RECORD_EXHAUSTED, NULL);
+    }
+
     record_sec = record_sec++ >= RECORD_TIME? 0 : record_sec;
+
+    return;
+}
+
+static void exhausted_event_hander(lv_event_t *e)
+{
+    lv_obj_t *obj = lv_event_get_target(e);
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (EV_RECORD_EXHAUSTED == code)
+    {
+        lv_obj_t *bg_image = lv_image_create(lv_layer_top());
+        lv_obj_add_style(bg_image, &style, 0);
+        lv_obj_set_style_opa(bg_image, LV_OPA_TRANSP, 0);
+        lv_obj_set_size(bg_image, lv_pct(100), lv_pct(100));
+        lv_image_set_src(bg_image, "V:png/img_record_10min.png");
+        lv_img_set_zoom(bg_image, 128);
+        lv_obj_center(bg_image);
+
+        lv_anim_t a;
+        lv_anim_init(&a);
+        lv_anim_set_var(&a, bg_image);
+        lv_anim_set_time(&a, 1200);
+        lv_anim_set_values(&a, 0, 255);
+        lv_anim_set_repeat_count(&a, 1);
+        lv_anim_set_exec_cb(&a, anim_alpha_exec);
+        lv_anim_start(&a);
+
+        lv_obj_add_flag(bg_image, LV_OBJ_FLAG_CLICKABLE);
+        lv_obj_add_event_cb(bg_image, click_event_hander, LV_EVENT_ALL, NULL);
+    }
+}
+
+static void anim_alpha_exec(lv_obj_t *obj, int32_t value)
+{
+    lv_obj_set_style_opa(obj, value, 0);
+    lv_obj_invalidate(obj);//刷新
+}
+
+static void click_event_hander(lv_event_t *e)
+{
+    lv_obj_t *obj = lv_event_get_target(e);
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (LV_EVENT_ALL < code && LV_EVENT_TRIPLE_CLICKED > code)
+    {
+        lv_obj_del(obj);
+    }
+
+    return;
 }
 
 static void record_btn_event_handler(lv_event_t *e)
