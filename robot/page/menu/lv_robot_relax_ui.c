@@ -33,7 +33,6 @@ static void robot_relax_page_create(void);
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
-LV_IMG_DECLARE(img_app_icon_relax);
 
 /**********************
  *  STATIC VARIABLES
@@ -45,7 +44,7 @@ static lv_widget_t lv_page_relax = {
     .page = NULL,
     .name = "解压",
     .type = LV_PAGE_RELAX,
-    .image = &img_app_icon_relax,
+    .path = "V:icon/img_app_icon_relax.png",
     .create_func = robot_relax_page_create,
     .show_func = robot_show_relax_page,
     .exit_func = robot_exit_relax_page,

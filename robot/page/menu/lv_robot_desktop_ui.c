@@ -33,7 +33,6 @@ static void robot_desktop_page_create(void);
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
-LV_IMG_DECLARE(img_desktop_backup);
 
 /**********************
  *  STATIC VARIABLES
@@ -45,7 +44,7 @@ static lv_widget_t lv_page_desktop = {
     .page = NULL,
     .name = "待机桌面",
     .type = LV_PAGE_DESKTOP,
-    .image = &img_desktop_backup,
+    .path = NULL,
     .create_func = robot_desktop_page_create,
     .show_func = robot_show_desktop_page,
     .exit_func = robot_exit_desktop_page,
@@ -75,7 +74,7 @@ static void robot_show_desktop_page(void)
 {
     lv_obj_t *img = lv_img_create(desktop_page);
     lv_obj_set_size(img, LV_PCT(100), LV_PCT(100));
-    lv_image_set_src(img, &img_desktop_backup);
+    lv_image_set_src(img, "V:png/img_desktop_backup.png");
     lv_obj_align(img, LV_ALIGN_CENTER, 0, 0);
     lv_image_set_scale(img, 128);
 

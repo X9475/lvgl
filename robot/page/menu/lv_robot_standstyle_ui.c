@@ -33,7 +33,6 @@ static void robot_standstyle_page_create(void);
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
-LV_IMG_DECLARE(img_app_icon_standstyle);
 
 /**********************
  *  STATIC VARIABLES
@@ -45,7 +44,7 @@ static lv_widget_t lv_page_standstyle = {
     .page = NULL,
     .name = "待机样式",
     .type = LV_PAGE_STANDSTYLE,
-    .image = &img_app_icon_standstyle,
+    .path = "V:icon/img_app_icon_standstyle.png",
     .create_func = robot_standstyle_page_create,
     .show_func = robot_show_standstyle_page,
     .exit_func = robot_exit_standstyle_page,

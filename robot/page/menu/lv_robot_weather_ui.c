@@ -60,7 +60,6 @@ static lv_style_t style;
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
-LV_IMG_DECLARE(img_app_icon_weather);
 void parse_json_weather(char *, weather_t *);
 
 /**********************
@@ -81,7 +80,7 @@ static lv_widget_t lv_page_weather = {
     .page = NULL,
     .name = "天气",
     .type = LV_PAGE_WEATHER,
-    .image = &img_app_icon_weather,
+    .path = "V:icon/img_app_icon_weather.png",
     .create_func = robot_weather_page_create,
     .show_func = robot_show_weather_page,
     .exit_func = robot_exit_weather_page,

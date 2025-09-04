@@ -33,7 +33,6 @@ static void robot_luckcard_page_create(void);
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
-LV_IMG_DECLARE(img_app_icon_luckcard);
 
 /**********************
  *  STATIC VARIABLES
@@ -45,7 +44,7 @@ static lv_widget_t lv_page_luckcard = {
     .page = NULL,
     .name = "好运日签",
     .type = LV_PAGE_LUCKCARD,
-    .image = &img_app_icon_luckcard,
+    .path = "V:icon/img_app_icon_luckcard.png",
     .create_func = robot_luckcard_page_create,
     .show_func = robot_show_luckcard_page,
     .exit_func = robot_exit_luckcard_page,

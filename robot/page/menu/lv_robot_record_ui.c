@@ -39,8 +39,6 @@ static void timer_callback_2(lv_timer_t *);
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
-LV_IMG_DECLARE(img_camera_backup);
-LV_IMG_DECLARE(img_app_icon_record);
 
 /**********************
  *  STATIC VARIABLES
@@ -69,7 +67,7 @@ static lv_widget_t lv_page_record = {
     .page = NULL,
     .name = "录像",
     .type = LV_PAGE_RECORD,
-    .image = &img_app_icon_record,
+    .path = "V:icon/img_app_icon_record.png",
     .create_func = robot_record_page_create,
     .show_func = robot_show_record_page,
     .exit_func = robot_exit_record_page,
@@ -145,7 +143,7 @@ static void robot_show_record_page(void)
     bg_image = lv_image_create(record_page);
     lv_obj_add_style(bg_image, &style, 0);
     lv_obj_set_size(bg_image, lv_pct(100), lv_pct(100));
-    lv_image_set_src(bg_image, &img_camera_backup);
+    lv_image_set_src(bg_image, "V:png/img_camera_backup.png");
     lv_img_set_zoom(bg_image, 128);
     lv_obj_center(bg_image);
 

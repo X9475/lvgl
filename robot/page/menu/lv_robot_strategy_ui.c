@@ -33,7 +33,6 @@ static void robot_strategy_page_create(void);
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
-LV_IMG_DECLARE(img_app_icon_strategy);
 
 /**********************
  *  STATIC VARIABLES
@@ -45,7 +44,7 @@ static lv_widget_t lv_page_strategy = {
     .page = NULL,
     .name = "叮咚策略器",
     .type = LV_PAGE_STRATEGY,
-    .image = &img_app_icon_strategy,
+    .path = "V:icon/img_app_icon_strategy.png",
     .create_func = robot_strategy_page_create,
     .show_func = robot_show_strategy_page,
     .exit_func = robot_exit_strategy_page,

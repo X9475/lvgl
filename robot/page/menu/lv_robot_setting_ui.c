@@ -36,9 +36,6 @@ static void slider_value_change_event_cb(lv_event_t *);
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
-LV_IMG_DECLARE(ezviz_setting_light);
-LV_IMG_DECLARE(ezviz_setting_volume);
-LV_IMG_DECLARE(img_app_icon_settings);
 
 /**********************
  *  STATIC VARIABLES
@@ -60,7 +57,7 @@ static lv_widget_t lv_page_setting = {
     .page = NULL,
     .name = "设置",
     .type = LV_PAGE_SETTING,
-    .image = &img_app_icon_settings,
+    .path = "V:icon/img_app_icon_settings.png",
     .create_func = robot_setting_page_create,
     .show_func = robot_show_setting_page,
     .exit_func = robot_exit_setting_page,
@@ -149,7 +146,7 @@ static void robot_show_setting_page(void)
     lv_obj_add_style(label1, &style_label, LV_PART_MAIN);
     lv_obj_align(label1, LV_ALIGN_LEFT_MID, 20, 0);
     lv_obj_t *img1 = lv_img_create(label1);
-    lv_img_set_src(img1, &ezviz_setting_light);
+    lv_img_set_src(img1, "V:icon/img_setting_light.png");
     lv_obj_align(img1, LV_ALIGN_CENTER, 0, 0);
 
     //音量设置
@@ -171,7 +168,7 @@ static void robot_show_setting_page(void)
     lv_obj_add_style(label2, &style_label, LV_PART_MAIN);
     lv_obj_align(label2, LV_ALIGN_LEFT_MID, 20, 0);
     lv_obj_t *img2 = lv_img_create(label2);
-    lv_img_set_src(img2, &ezviz_setting_volume);
+    lv_img_set_src(img2, "V:icon/img_setting_volume.png");
     lv_obj_align(img2, LV_ALIGN_CENTER, 0, 0);
 
     //显示底部横条

@@ -47,7 +47,7 @@ static lv_widget_t lv_page_menu = {
     .page = NULL,
     .name = "菜单",
     .type = LV_PAGE_MENU,
-    .image = NULL,
+    .path = NULL,
     .create_func = robot_menu_page_create,
     .show_func = robot_show_menu_page,
     .exit_func = robot_exit_menu_page,
@@ -100,9 +100,9 @@ static void robot_show_menu_page(void)
 
             // 添加imgbtn
             imgbtn = lv_imgbtn_create(obj);
-            lv_imgbtn_set_src(imgbtn, LV_IMGBTN_STATE_PRESSED, NULL, widget->image, NULL);
-            lv_imgbtn_set_src(imgbtn, LV_IMGBTN_STATE_RELEASED, NULL, widget->image, NULL);
-            lv_obj_set_size(imgbtn, widget->image->header.w, widget->image->header.h);
+            lv_imgbtn_set_src(imgbtn, LV_IMGBTN_STATE_PRESSED, NULL, widget->path, NULL);
+            lv_imgbtn_set_src(imgbtn, LV_IMGBTN_STATE_RELEASED, NULL, widget->path, NULL);
+            // lv_obj_set_size(imgbtn, widget->image->header.w, widget->image->header.h);
             lv_obj_set_user_data(imgbtn, widget);
             lv_obj_center(imgbtn);
 

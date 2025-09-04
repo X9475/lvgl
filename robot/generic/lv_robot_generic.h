@@ -53,7 +53,7 @@ typedef struct
     lv_obj_t        *page;
     char            *name;
     uint8_t         type;
-    lv_image_dsc_t  *image;
+    char            *path;
     void            *reserved;
 
     void ( *show_func)();

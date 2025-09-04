@@ -33,7 +33,6 @@ static void robot_mystery_page_create(void);
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
-LV_IMG_DECLARE(img_app_icon_mystery);
 
 /**********************
  *  STATIC VARIABLES
@@ -45,7 +44,7 @@ static lv_widget_t lv_page_mystery = {
     .page = NULL,
     .name = "解惑小魔盒",
     .type = LV_PAGE_STRATEGY,
-    .image = &img_app_icon_mystery,
+    .path = "V:icon/img_app_icon_mystery.png",
     .create_func = robot_mystery_page_create,
     .show_func = robot_show_mystery_page,
     .exit_func = robot_exit_mystery_page,

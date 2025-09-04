@@ -24,8 +24,8 @@ lv_font_t *fzlth_font_100;
 lv_font_t *fzlth_font_30B;
 lv_font_t *fzlth_font_100B;
 
-#define FZLTH_GB18030L2_B_DIR "../lvgl/robot/assert/font/FZLTH_GB18030L2/FZLTH_GB18030L2_B.ttf"
-#define FZLTH_GB18030L2_R_DIR "../lvgl/robot/assert/font/FZLTH_GB18030L2/FZLTH_GB18030L2_R.ttf"
+#define FZLTH_GB18030L2_B_DIR "../../assert/font/FZLTH_GB18030L2/FZLTH_GB18030L2_B.ttf"
+#define FZLTH_GB18030L2_R_DIR "../../assert/font/FZLTH_GB18030L2/FZLTH_GB18030L2_R.ttf"
 
 /**********************
  *     TYPEDEFS
