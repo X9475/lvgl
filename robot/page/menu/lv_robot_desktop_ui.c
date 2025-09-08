@@ -17,6 +17,14 @@
 /*********************
  *      DEFINES
  *********************/
+#define LV_VIDEO_STANDBY_1 "../../assert/video/通用-早上-刚睡醒打哈欠.1.mp4"
+#define LV_VIDEO_STANDBY_2 "../../assert/video/通用-早上-好奇.1.mp4"
+#define LV_VIDEO_STANDBY_3 "../../assert/video/通用-早上-平静.1.mp4"
+#define LV_VIDEO_STANDBY_4 "../../assert/video/通用-早上-期盼.1.mp4"
+#define LV_VIDEO_STANDBY_5 "../../assert/video/通用-晚上-打呼噜.1.mp4"
+#define LV_VIDEO_STANDBY_6 "../../assert/video/通用-晚上-梦游.1.mp4"
+#define LV_VIDEO_STANDBY_7 "../../assert/video/通用-晚上-睡觉.1.mp4"
+#define LV_VIDEO_STANDBY_8 "../../assert/video/高冷-陌生人发出指令-耍酷.1.mp4"
 
 /**********************
  *      TYPEDEFS
@@ -50,6 +58,17 @@ static lv_widget_t lv_page_desktop = {
     .exit_func = robot_exit_desktop_page,
     .reserved = NULL
 };
+static const char *video_paths[] = {
+    LV_VIDEO_STANDBY_1,
+    LV_VIDEO_STANDBY_2,
+    LV_VIDEO_STANDBY_3,
+    LV_VIDEO_STANDBY_4,
+    LV_VIDEO_STANDBY_5,
+    LV_VIDEO_STANDBY_6,
+    LV_VIDEO_STANDBY_7,
+    LV_VIDEO_STANDBY_8
+};
+
 
 /**********************
  *   GLOBAL FUNCTIONS
@@ -72,11 +91,16 @@ static void robot_style_init()
 
 static void robot_show_desktop_page(void)
 {
-    lv_obj_t *img = lv_img_create(desktop_page);
-    lv_obj_set_size(img, LV_PCT(100), LV_PCT(100));
-    lv_image_set_src(img, "V:png/img_desktop_backup.png");
-    lv_obj_align(img, LV_ALIGN_CENTER, 0, 0);
-    lv_image_set_scale(img, 128);
+    uint32_t seed = (uint32_t)lv_tick_get();
+    lv_rand_set_seed(seed);
+    uint32_t idx = lv_rand(1, 8);
+
+    //随机选择
+    lv_obj_t *player = lv_ffmpeg_player_create(desktop_page);
+    lv_ffmpeg_player_set_src(player, video_paths[idx -1]);
+    lv_ffmpeg_player_set_auto_restart(player, true);
+    lv_ffmpeg_player_set_cmd(player, LV_FFMPEG_PLAYER_CMD_START);
+    lv_obj_center(player);
 
     return;
 }

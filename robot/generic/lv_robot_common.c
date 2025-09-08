@@ -1,25 +1,18 @@
 /**
- * @file lv_robot_comon.h
+ * @file lv_robot_common.c
  * @author your name (you@domain.com)
  * @brief 
  * @version 0.1
- * @date 2025-09-02
+ * @date 2025-09-08
  * 
  * @copyright Copyright (c) 2025
  * 
  */
 
-#ifndef LV_ROBOT_COMMON_H
-#define LV_ROBOT_COMMON_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*********************
  *     INCLUDES
  *********************/
-#include "../../lvgl.h"
+#include "lv_robot_common.h"
 
 /*********************
  *     DEFINES
@@ -30,22 +23,22 @@ extern "C" {
  **********************/
 
 /**********************
- * GLOBAL VARIABLES
+ * STATIC VARIABLES
+ **********************/
+
+/**********************
+ * STATIC PROTOTYPES
  **********************/
 
 /**********************
  * GLOBAL FUNCTIONS
  **********************/
+lv_obj_t *lv_qrcode_create_func(lv_obj_t *parent, void *data)
+{
+    lv_obj_t *qr = lv_qrcode_create(parent);
 
-/// @brief 创建二维码对象
-lv_obj_t *lv_qrcode_create_func(lv_obj_t *, void *);
+    const char *qrdata = (const char *)data;
+    lv_qrcode_update(qr, qrdata, strlen(qrdata));
 
-/**********************
- * MACRO FUNCTIONS
- **********************/
-
-#ifdef __cplusplus
+    return qr;
 }
-#endif
-
-#endif /*LV_ROBOT_COMMON_H*/
