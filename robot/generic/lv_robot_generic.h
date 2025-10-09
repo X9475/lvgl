@@ -121,6 +121,8 @@ bool lv_page_stack_exsit(uint8_t);
 
 void lv_page_stack_deinit();
 
+void clean_old_page_delayed(void *);
+
 void lv_page_manager_gesture_event(lv_event_t *);
 
 /**********************

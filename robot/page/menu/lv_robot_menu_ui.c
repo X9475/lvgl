@@ -157,11 +157,16 @@ static void robot_menu_item_event_handler(lv_event_t *e)
     {
         //目标页面跳转，页面入栈
         lv_widget_t *cur_screen = lv_page_manager_change(data->type);
+        lv_scr_load_anim(cur_screen->page, LV_SCREEN_LOAD_ANIM_NONE, 0, 0, false);
 
+        //立即刷新屏幕
+        lv_refr_now(NULL);
+
+        //页面回收前操作
+        if (NULL != lv_page_menu.exit_func) {
+            lv_page_menu.exit_func();
+        }
         //清除页面内容
         lv_obj_clean(lv_page_menu.page);
-
-        //激活屏幕
-        lv_scr_load_anim(cur_screen->page, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, false);
     }
 }

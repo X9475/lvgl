@@ -267,14 +267,10 @@ void lv_page_stack_deinit()
 /***********************************屏幕滑动处理*********************************/
 void lv_page_manager_gesture_event(lv_event_t *e)
 {
-    lv_obj_t *obj = lv_event_get_target(e);
-    lv_widget_t *data = lv_obj_get_user_data(obj);
-
     lv_widget_t *cur_widget = lv_page_stack_top();//当前展示页面
     lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_get_act());
     lv_indev_wait_release(lv_indev_get_act());
 
-    //LV_LOG_USER("===>dir: %d", dir);
     if (LV_DIR_BOTTOM == dir)
     {//下拉屏幕上边缘
 
@@ -282,16 +278,20 @@ void lv_page_manager_gesture_event(lv_event_t *e)
         if (cur_widget->type == LV_PAGE_MENU) return;
 
         lv_widget_t *cur_screen = lv_page_manager_change(LV_PAGE_MENU);
-        lv_scr_load_anim(cur_screen->page, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, false);
+        lv_scr_load_anim(cur_screen->page, LV_SCREEN_LOAD_ANIM_NONE, 0, 0, false);
+
+        //立即刷新屏幕
+        lv_refr_now(NULL);
+        lv_async_call(clean_old_page_delayed, cur_widget);
 
         //页面回收前的操作
-        if (NULL != cur_widget->exit_func)
-        {
-            cur_widget->exit_func();
-        }
+        // if (NULL != cur_widget->exit_func)
+        // {
+        //     cur_widget->exit_func();
+        // }
 
         //清空当前页面内容，保证下次进入页面干净
-        lv_obj_clean(cur_widget->page);
+        // lv_obj_clean(cur_widget->page);
 
         //隐藏底部横条
         lv_obj_add_flag(buttom_line, LV_OBJ_FLAG_HIDDEN);
@@ -309,10 +309,10 @@ void lv_page_manager_gesture_event(lv_event_t *e)
         lv_obj_add_flag(buttom_line, LV_OBJ_FLAG_HIDDEN);
 
         //页面回收前的操作
-        if (NULL != cur_widget->exit_func)
-        {
-            cur_widget->exit_func();
-        }
+        // if (NULL != cur_widget->exit_func)
+        // {
+        //     cur_widget->exit_func();
+        // }
 
         void *page_ptr = lv_page_foreach_find(LV_PAGE_MENU);
         if (NULL != page_ptr)
@@ -320,21 +320,43 @@ void lv_page_manager_gesture_event(lv_event_t *e)
             lv_widget_t *widget = (lv_widget_t *)page_ptr;
             if (widget->page == cur_screen)//当前屏幕是菜单
             {
-                lv_obj_clean(widget->page);
+                // lv_obj_clean(widget->page);
                 lv_widget_t *top = lv_page_stack_top();
                 lv_page_manager_change(top->type);
-                lv_scr_load_anim(top->page, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, false);
+                lv_scr_load_anim(top->page, LV_SCREEN_LOAD_ANIM_NONE, 0, 0, false);
+
+                //立即刷新屏幕
+                lv_refr_now(NULL);
+                lv_async_call(clean_old_page_delayed, widget);
                 return;
             }
         }
 
         //对于确认返回的页面，回收屏幕子控件，但保留屏幕本身
-        lv_obj_clean(cur_widget->page);
+        // lv_obj_clean(cur_widget->page);
 
         lv_widget_t *top_widget = lv_page_stack_pop();
         lv_page_manager_change(top_widget->type);
-        lv_scr_load_anim(top_widget->page, LV_SCR_LOAD_ANIM_NONE, 500, 0, false);
+        lv_scr_load_anim(top_widget->page, LV_SCREEN_LOAD_ANIM_NONE, 0, 0, false);
+
+        //立即刷新屏幕
+        lv_refr_now(NULL);
+        lv_async_call(clean_old_page_delayed, cur_widget);
     }
 
+    return;
+}
+
+void clean_old_page_delayed(void *widget)
+{
+    lv_widget_t *old_widget = (lv_widget_t *)widget;
+
+    //页面回收前的操作
+    if (NULL != old_widget->exit_func)
+    {
+        old_widget->exit_func();
+    }
+
+    lv_obj_clean(old_widget->page);
     return;
 }
